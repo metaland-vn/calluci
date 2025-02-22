@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Babylon.js GLB Viewer</title>
+    <title>Babylon.js Multi-GLB Viewer</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <style>
@@ -45,7 +45,7 @@
     <canvas id="renderCanvas"></canvas>
     <div id="iframeContainer">
         <button id="closeBtn">✖ Close</button>
-        <iframe id="cloIframe" src="https://style.clo-set.com/embed/182308771691441593a4d75ea7ce3371/1/c/0?colorway=0&logo=none" allowfullscreen></iframe>
+        <iframe id="cloIframe" allowfullscreen></iframe>
     </div>
 
     <script>
@@ -53,44 +53,53 @@
             const canvas = document.getElementById("renderCanvas");
             const engine = new BABYLON.Engine(canvas, true);
             const iframeContainer = document.getElementById("iframeContainer");
+            const cloIframe = document.getElementById("cloIframe");
             const closeBtn = document.getElementById("closeBtn");
 
             const createScene = function () {
                 const scene = new BABYLON.Scene(engine);
                 scene.createDefaultCameraOrLight(true, true, true);
 
-                // Tải mô hình GLB
-                BABYLON.SceneLoader.Append("", "model.glb", scene, function (scene) {
-                    scene.createDefaultCameraOrLight(true, true, true);
+                // Danh sách mô hình GLB và iframe tương ứng
+                const models = [
+                    { file: "model1.glb", position: new BABYLON.Vector3(-2, 0, 0), iframeUrl: "https://style.clo-set.com/embed/182308771691441593a4d75ea7ce3371/1/c/0?colorway=0&logo=none" },
+                    { file: "model2.glb", position: new BABYLON.Vector3(2, 0, 0), iframeUrl: "https://style.clo-set.com/embed/482308771691441593a4d75ea7ce3372/1/c/0?colorway=0&logo=none" },
+                    { file: "model3.glb", position: new BABYLON.Vector3(0, 0, 2), iframeUrl: "https://style.clo-set.com/embed/582308771691441593a4d75ea7ce3373/1/c/0?colorway=0&logo=none" }
+                ];
 
-                    // Xử lý click vào mô hình
-                    scene.onPointerObservable.add((pointerInfo) => {
-                        if (pointerInfo.pickInfo.hit) {
-                            iframeContainer.style.display = "block";
-                        }
-                    }, BABYLON.PointerEventTypes.POINTERDOWN);
+                models.forEach(model => {
+                    BABYLON.SceneLoader.ImportMesh("", "./", model.file, scene, function (meshes) {
+                        meshes.forEach(mesh => {
+                            mesh.position = model.position;
+                            mesh.actionManager = new BABYLON.ActionManager(scene);
+                            mesh.actionManager.registerAction(
+                                new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
+                                    cloIframe.src = model.iframeUrl;
+                                    iframeContainer.style.display = "block";
+                                })
+                            );
+                        });
+                    });
                 });
 
                 return scene;
             };
 
             const scene = createScene();
-            engine.runRenderLoop(function () {
-                scene.render();
-            });
+            engine.runRenderLoop(() => scene.render());
 
-            window.addEventListener("resize", function () {
-                engine.resize();
-            });
+            window.addEventListener("resize", () => engine.resize());
 
             // Đóng iframe khi bấm nút Close
             closeBtn.addEventListener("click", () => {
                 iframeContainer.style.display = "none";
+                cloIframe.src = ""; // Reset iframe khi đóng
             });
         });
     </script>
 </body>
 </html>
+
 
 
 
