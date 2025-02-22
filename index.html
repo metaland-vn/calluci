@@ -43,6 +43,54 @@
 </head>
 <body>
     <canvas id="renderCanvas"></canvas>
-    <div
+    <div id="iframeContainer">
+        <button id="closeBtn">✖ Close</button>
+        <iframe id="cloIframe" src="https://style.clo-set.com/embed/182308771691441593a4d75ea7ce3371/1/c/0?colorway=0&logo=none" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            const canvas = document.getElementById("renderCanvas");
+            const engine = new BABYLON.Engine(canvas, true);
+            const iframeContainer = document.getElementById("iframeContainer");
+            const closeBtn = document.getElementById("closeBtn");
+
+            const createScene = function () {
+                const scene = new BABYLON.Scene(engine);
+                scene.createDefaultCameraOrLight(true, true, true);
+
+                // Tải mô hình GLB
+                BABYLON.SceneLoader.Append("", "model.glb", scene, function (scene) {
+                    scene.createDefaultCameraOrLight(true, true, true);
+
+                    // Xử lý click vào mô hình
+                    scene.onPointerObservable.add((pointerInfo) => {
+                        if (pointerInfo.pickInfo.hit) {
+                            iframeContainer.style.display = "block";
+                        }
+                    }, BABYLON.PointerEventTypes.POINTERDOWN);
+                });
+
+                return scene;
+            };
+
+            const scene = createScene();
+            engine.runRenderLoop(function () {
+                scene.render();
+            });
+
+            window.addEventListener("resize", function () {
+                engine.resize();
+            });
+
+            // Đóng iframe khi bấm nút Close
+            closeBtn.addEventListener("click", () => {
+                iframeContainer.style.display = "none";
+            });
+        });
+    </script>
+</body>
+</html>
+
 
 
