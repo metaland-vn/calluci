@@ -15,11 +15,11 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%;
+            width: 60%;
             height: 80%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
             z-index: 100;
         }
         iframe {
@@ -34,60 +34,15 @@
             background: red;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 8px 12px;
             cursor: pointer;
             border-radius: 5px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
     <canvas id="renderCanvas"></canvas>
-    <div id="iframeContainer">
-        <button id="closeBtn">✖ Close</button>
-        <iframe id="cloIframe" src="https://www.clo-set.com"></iframe>
-    </div>
+    <div
 
-    <script>
-        window.addEventListener("DOMContentLoaded", function () {
-            const canvas = document.getElementById("renderCanvas");
-            const engine = new BABYLON.Engine(canvas, true);
-            const iframeContainer = document.getElementById("iframeContainer");
-            const closeBtn = document.getElementById("closeBtn");
-
-            const createScene = function () {
-                const scene = new BABYLON.Scene(engine);
-                scene.createDefaultCameraOrLight(true, true, true);
-
-                // Tải mô hình GLB
-                BABYLON.SceneLoader.Append("", "model.glb", scene, function (scene) {
-                    scene.createDefaultCameraOrLight(true, true, true);
-
-                    // Xử lý click vào mô hình
-                    scene.onPointerObservable.add((pointerInfo) => {
-                        if (pointerInfo.pickInfo.hit) {
-                            iframeContainer.style.display = "block";
-                        }
-                    }, BABYLON.PointerEventTypes.POINTERDOWN);
-                });
-
-                return scene;
-            };
-
-            const scene = createScene();
-            engine.runRenderLoop(function () {
-                scene.render();
-            });
-
-            window.addEventListener("resize", function () {
-                engine.resize();
-            });
-
-            // Đóng iframe khi bấm nút Close
-            closeBtn.addEventListener("click", () => {
-                iframeContainer.style.display = "none";
-            });
-        });
-    </script>
-</body>
-</html>
 
